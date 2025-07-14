@@ -48,6 +48,22 @@ services:
     networks:
       - laravel
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: react-frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=development
+    command: ["npm", "run", "dev", "--", "--host"]
+    networks:
+      - laravel
+
 networks:
   laravel:
     driver: bridge
