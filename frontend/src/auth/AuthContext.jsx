@@ -11,11 +11,15 @@ export function AuthProvider({ children }) {
   // Ahora login recibe los datos del usuario
   const login = async (credentials) => {
     try {
+      console.log('URL usada:', 'http://localhost:8080/api/login')
+      console.log('Datos enviados:', credentials)
       const response = await fetch('http://localhost:8080/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
+        credentials: 'omit',
         body: JSON.stringify(credentials),
       })
       const data = await response.json()

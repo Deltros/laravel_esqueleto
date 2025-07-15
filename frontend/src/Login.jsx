@@ -8,8 +8,8 @@ const { Title } = Typography
 function LoginForm() {
   const { login } = useAuth()
 
-  const onFinish = (values) => {
-    // Pasar los datos del formulario a login
+  const onFinish = (values, event) => {
+    if (event) event.preventDefault();
     login(values)
   }
 
