@@ -266,3 +266,6 @@ tar -czf backup.tar.gz backend/
 ---
 
 **Nota:** Este proyecto está completamente automatizado. Cualquier desarrollador puede clonar el repositorio y ejecutar `docker compose up --build -d` para tener todo funcionando inmediatamente. 
+
+para reiniciar:
+'docker compose down && docker compose up -d --build'

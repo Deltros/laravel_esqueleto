@@ -1,16 +1,25 @@
-import { Button, Card, Form, Input, Typography } from 'antd'
+import { Button, Card, Form, Input, Typography, Alert } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
-import { AuthProvider } from './auth/AuthContext'
-import { useAuth } from './auth/useAuth'
+import { useAuth } from '../auth/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 const { Title } = Typography
 
 function LoginForm() {
   const { login } = useAuth()
+  const navigate = useNavigate();
+  const [error, setError] = useState(null);
 
-  const onFinish = (values, event) => {
+  const onFinish = async (values, event) => {
     if (event) event.preventDefault();
-    login(values)
+    const data = await login(values);
+    if (data.token) {
+      setError(null);
+      navigate('/');
+    } else {
+      setError('Credenciales incorrectas');
+    }
   }
 
   return (
@@ -19,6 +28,7 @@ function LoginForm() {
         <Title level={2} className="login-title">
           Iniciar Sesión
         </Title>
+        {error && <Alert message={error} type="error" showIcon style={{ marginBottom: 16 }} />}
         <Form layout="vertical" onFinish={onFinish}>
           <Form.Item label="Email" name="email">
             <Input 
@@ -47,9 +57,5 @@ function LoginForm() {
 }
 
 export default function Login() {
-  return (
-    <AuthProvider>
-      <LoginForm />
-    </AuthProvider>
-  )
+  return <LoginForm />;
 } 

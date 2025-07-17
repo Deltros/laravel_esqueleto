@@ -1,40 +1,45 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useState, useEffect } from 'react';
+import { fetchApi } from '../api/fetchApi';
 
-const AuthContext = createContext()
+const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [auth, setAuth] = useState(() => {
-    const data = localStorage.getItem('auth')
-    return data ? JSON.parse(data) : { logeado: false, token: null }
-  })
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
 
-  // Ahora login recibe los datos del usuario
-  const login = async (credentials) => {
-    try {
-      console.log('URL usada:', 'http://localhost:8080/api/login')
-      console.log('Datos enviados:', credentials)
-      const response = await fetch('http://localhost:8080/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        credentials: 'omit',
-        body: JSON.stringify(credentials),
-      })
-      const data = await response.json()
-      console.log('Respuesta del backend:', data)
-      // Aquí podrías guardar el token si el login es exitoso
-    } catch (error) {
-      console.error('Error en login:', error)
+  // Al iniciar, revisa si hay token guardado
+  useEffect(() => {
+    const savedToken = localStorage.getItem('token');
+    if (savedToken) {
+      setToken(savedToken);
+      // Opcional: podrías hacer un fetch para obtener el usuario con ese token
     }
-  }
+  }, []);
+
+  const login = async (credentials) => {
+    const response = await fetchApi('api/login', credentials);
+    const data = await response.json();
+    if (response.ok && data.token) {
+      setToken(data.token);
+      localStorage.setItem('token', data.token);
+      setUser(data.user); // si el backend devuelve el usuario
+    }
+    return data;
+  };
+
+  const logout = () => {
+    setToken(null);
+    setUser(null);
+    localStorage.removeItem('token');
+  };
 
   return (
-    <AuthContext.Provider value={{ auth, login }}>
+    <AuthContext.Provider value={{ user, token, login, logout }}>
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
 
-export default AuthContext 
+export function useAuth() {
+  return useContext(AuthContext);
+} 
