@@ -5,16 +5,7 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
-
-  // Al iniciar, revisa si hay token guardado
-  useEffect(() => {
-    const savedToken = localStorage.getItem('token');
-    if (savedToken) {
-      setToken(savedToken);
-      // Opcional: podrías hacer un fetch para obtener el usuario con ese token
-    }
-  }, []);
+  const [token, setToken] = useState(() => localStorage.getItem('token'));
 
   const login = async (credentials) => {
     const response = await fetchApi('api/login', credentials);
@@ -27,7 +18,12 @@ export function AuthProvider({ children }) {
     return data;
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await fetchApi('api/logout', {}, { method: 'POST', token });
+    } catch (e) {
+      // Ignorar errores de logout (por ejemplo, si el token ya no es válido)
+    }
     setToken(null);
     setUser(null);
     localStorage.removeItem('token');

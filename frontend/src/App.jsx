@@ -3,6 +3,7 @@ import Login from './pages/Login';
 import HolaMundo from './pages/HolaMundo';
 import ProtectedRoute from './auth/ProtectedRoute';
 import { AuthProvider } from './auth/AuthContext';
+import Index from './pages/Index';
 
 function App() {
   return (
@@ -13,7 +14,7 @@ function App() {
           path="/"
           element={
             <ProtectedRoute>
-              <HolaMundo />
+              <Index />
             </ProtectedRoute>
           }
         />
